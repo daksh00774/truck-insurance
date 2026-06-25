@@ -976,13 +976,13 @@ faqList.addEventListener('click',e=>{
 /* ------- Swiper ------- */
 new Swiper('.conditionsSwiper',{slidesPerView:'auto',spaceBetween:20,navigation:{nextEl:'.swiper-button-next',prevEl:'.swiper-button-prev'},loop:true});
 
-/* ------- Lenis smooth scroll ------- */
-const lenis = new Lenis({duration:1.1,easing:t=>Math.min(1,1.001-Math.pow(2,-10*t))});
-function raf(t){lenis.raf(t);requestAnimationFrame(raf)} requestAnimationFrame(raf);
+/* ------- Scroll (disabled Lenis scroll effect) ------- */
+/* Lenis smooth scrolling removed to fix scrolleffect not working well.
+   GSAP ScrollTrigger will run using the browser's native scroll events. */
 
 /* ------- GSAP scroll + reveals ------- */
 gsap.registerPlugin(ScrollTrigger);
-lenis.on('scroll',ScrollTrigger.update);
+
 
 const io = new IntersectionObserver(entries=>{
   entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}});
@@ -1060,7 +1060,17 @@ document.getElementById('closeExit').addEventListener('click',()=>document.getEl
 
 /* Smooth anchor */
 document.querySelectorAll('a[href^="#"]').forEach(a=>{
-  a.addEventListener('click',e=>{const id=a.getAttribute('href');if(id.length>1){const t=document.querySelector(id);if(t){e.preventDefault();lenis.scrollTo(t,{offset:-60})}}});
+  a.addEventListener('click',e=>{
+    const id=a.getAttribute('href');
+    if(id.length>1){
+      const t=document.querySelector(id);
+      if(t){
+        e.preventDefault();
+        const y=t.getBoundingClientRect().top + window.pageYOffset - 60;
+        window.scrollTo({top:y,behavior:'smooth'});
+      }
+    }
+  });
 });
 </script>
 
